@@ -14,13 +14,13 @@ class PivotSuite extends FunSuite {
     
     val marriedP = Pivot(
       List(
-        List("Name", "Age", "Married"),
-        List("Bill", "42", "TRUE"),
-        List("Heloise", "47", "TRUE"),
-        List("Thelma", "34", "FALSE"),
-        List("Bridget", "47", "TRUE"),
-        List("Robert", "42", "FALSE"),
-        List("Eddie", "42", "TRUE")
+        List("Name",    "Age",  "Married"),
+        List("Bill",    "42",   "TRUE"   ),
+        List("Heloise", "47",   "TRUE"   ),
+        List("Thelma",  "34",   "FALSE"  ),
+        List("Bridget", "47",   "TRUE"   ),
+        List("Robert",  "42",   "FALSE"  ),
+        List("Eddie",   "42",   "TRUE"   )
 
       )
     )
