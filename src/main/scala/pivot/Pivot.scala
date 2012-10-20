@@ -9,22 +9,38 @@ class Pivot(val rows: List[List[String]]) {
     val newRows = (headers.map(_._2) :+ newColName) +:
       body.map(row => { row :+ f(row)})
     Pivot(newRows)
-     
   }
 
-  def doPivot(accuOp: (String => String))(xCol: String, yCol: String) = {
-    val pivotRows = subset(List(xCol, yCol)).rows.map(row => {(row(0), row(1))})
-    val header = pivotRows.head
-    val data = pivotRows.tail.groupBy(identity)
-    println(data)
- //  val data = pivotRows.tail.groupBy(identity).map(g => {(g._1, g._2.map(accuOp))})
- //  val xAxis = data.map(g => {g._1._1})
- //  val yAxis = data.map(g => {g._1._2})
- //  Pivot(xAxis.map(x => {
- //    yAxis.map(y => {
- //      data.filter(g => {g._1 == (x,y)}).get
- //    })
- //  }))
+  def doPivot(accuOp: List[String] => String)(xCol: String, yCol: String, accuCol: String) = {
+    def colMatch(row: List[String], col : String) : Boolean = row(0) == col
+    // transpose to easily filter out noise columns
+    val tRows = rows.transpose
+    val pivotRows = (tRows.filter(colMatch(_, xCol)) ++
+        tRows.filter(colMatch(_, yCol)) ++
+        tRows.filter(colMatch(_, accuCol))).transpose
+    
+    // group by x and y, sending the resulting collection of
+    // accumulated values to the accuOp function for post-processing
+    val data = pivotRows.tail.groupBy(row => {
+      (row(0), row(1))
+    }).map(g => {
+      (g._1, accuOp(g._2.map(_(2))))
+    }).toMap
+
+    // get distinct axis values
+    val xAxis = data.map(g => {g._1._1}).toList.distinct
+    val yAxis = data.map(g => {g._1._2}).toList.distinct
+
+    // create result matrix
+    val newRows = yAxis.map(y => {
+      xAxis.map(x => {
+        data.getOrElse((x,y), "")
+      })
+    })
+
+   // collect it with axis labels for results
+   Pivot(List((yCol + "/" + xCol) +: xAxis) :::
+     newRows.zip(yAxis).map(x=> {x._2 +: x._1}))
   }
 
   def subset(rowsToKeep: List[String]) : Pivot = {
@@ -36,13 +52,9 @@ class Pivot(val rows: List[List[String]]) {
     rows.map(row => {
       row.map(_.padTo(maxWidth, " ").mkString).mkString
     }).mkString("\n")
-
   }
-
 }
 
 object Pivot {
-
   def apply(rows: List[List[String]]) = new Pivot(rows)
-
 }

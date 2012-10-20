@@ -45,17 +45,12 @@ class PivotSuite extends FunSuite {
 
   test("pivot should transpose") {
     new PivotTest {
-      def accum(pointVal: String) = {
-        "1"
+      def accum(values: List[String]) = {
+        values.map(x => {1}).sum.toString
       }
-      marriedP.doPivot(accum)("Age", "Married")
-      //println(p1.doPivot)
+      println(marriedP + "\n")
+      println(marriedP.doPivot(accum)("Age", "Married", "Married"))
     }
   }
 
-  test("subset should reduce rows") {
-    new PivotTest {
-      println(p1.subset(numberRows(0).zipWithIndex.filter(_._2 % 2 == 0).map(_._1)))
-    }
-  }
 }
