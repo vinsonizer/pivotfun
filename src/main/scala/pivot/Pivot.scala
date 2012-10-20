@@ -2,29 +2,25 @@ package pivot
 
 class Pivot(val rows: List[List[String]]) {
 
-  val headers = rows.head.zipWithIndex.map(_.swap)
+  val headers = rows.head.zipWithIndex.toMap
   val body    = rows.tail
 
   def addCalcCol(f: List[String] => String)(newColName: String) : Pivot = {
-    val newRows = (headers.map(_._2) :+ newColName) +:
+    val newRows = (headers.map(_._1).toList :+ newColName) +:
       body.map(row => { row :+ f(row)})
     Pivot(newRows)
   }
 
   def doPivot(accuOp: List[String] => String)(xCol: String, yCol: String, accuCol: String) = {
-    def colMatch(row: List[String], col : String) : Boolean = row(0) == col
-    // transpose to easily filter out noise columns
-    val tRows = rows.transpose
-    val pivotRows = (tRows.filter(colMatch(_, xCol)) ++
-        tRows.filter(colMatch(_, yCol)) ++
-        tRows.filter(colMatch(_, accuCol))).transpose
-    
+    // create list of indexes that correlate to x, y, accuCol
+    val colsIdx = List(xCol, yCol, accuCol).map(headers.getOrElse(_, 1))
+
     // group by x and y, sending the resulting collection of
     // accumulated values to the accuOp function for post-processing
-    val data = pivotRows.tail.groupBy(row => {
-      (row(0), row(1))
+    val data = body.groupBy(row => {
+      (row(colsIdx(0)), row(colsIdx(1)))
     }).map(g => {
-      (g._1, accuOp(g._2.map(_(2))))
+      (g._1, accuOp(g._2.map(_(colsIdx(2)))))
     }).toMap
 
     // get distinct axis values
