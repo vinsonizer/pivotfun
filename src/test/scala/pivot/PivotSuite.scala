@@ -45,11 +45,20 @@ class PivotSuite extends FunSuite {
 
   test("pivot should transpose") {
     new PivotTest {
-      def accum(values: List[String]) = {
+      def count(values: List[String]) = {
         values.map(x => {1}).sum.toString
       }
-      println(marriedP + "\n")
-      println(marriedP.doPivot(accum)("Age", "Married", "Married"))
+      def sum(values: List[String]) = {
+        values.map(_.toInt).sum.toString
+      }
+      def avg(values: List[String]) = {
+        (values.map(_.toInt).sum / values.size).toString
+      }
+      println("base table: \n" + marriedP + "\n")
+
+      println("using count:  \n" + marriedP.doPivot(count)("Age", "Married", "Age") + "\n")
+      println("using sum:    \n" + marriedP.doPivot(sum  )("Age", "Married", "Age") + "\n")
+      println("using average:\n" + marriedP.doPivot(avg  )("Age", "Married", "Age") + "\n")
     }
   }
 
