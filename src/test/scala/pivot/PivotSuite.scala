@@ -11,6 +11,19 @@ class PivotSuite extends FunSuite {
     val numberRows = (List("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten") +: 
       Range(1, 10, 1).map(x => {Range(x*1, x*1+10, 1).map(_.toString).toList})).toList
     val p1 = Pivot(numberRows)
+    
+    val marriedP = Pivot(
+      List(
+        List("Name", "Age", "Married"),
+        List("Bill", "42", "TRUE"),
+        List("Heloise", "47", "TRUE"),
+        List("Thelma", "34", "FALSE"),
+        List("Bridget", "47", "TRUE"),
+        List("Robert", "42", "FALSE"),
+        List("Eddie", "42", "TRUE")
+
+      )
+    )
   }
 
   test("headers should have same size as rows") {
@@ -32,7 +45,11 @@ class PivotSuite extends FunSuite {
 
   test("pivot should transpose") {
     new PivotTest {
-      println(p1.doPivot)
+      def accum(pointVal: String) = {
+        "1"
+      }
+      marriedP.doPivot(accum)("Age", "Married")
+      //println(p1.doPivot)
     }
   }
 

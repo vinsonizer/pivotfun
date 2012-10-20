@@ -12,8 +12,19 @@ class Pivot(val rows: List[List[String]]) {
      
   }
 
-  def doPivot : Pivot = {
-    Pivot(rows.transpose)
+  def doPivot(accuOp: (String => String))(xCol: String, yCol: String) = {
+    val pivotRows = subset(List(xCol, yCol)).rows.map(row => {(row(0), row(1))})
+    val header = pivotRows.head
+    val data = pivotRows.tail.groupBy(identity)
+    println(data)
+ //  val data = pivotRows.tail.groupBy(identity).map(g => {(g._1, g._2.map(accuOp))})
+ //  val xAxis = data.map(g => {g._1._1})
+ //  val yAxis = data.map(g => {g._1._2})
+ //  Pivot(xAxis.map(x => {
+ //    yAxis.map(y => {
+ //      data.filter(g => {g._1 == (x,y)}).get
+ //    })
+ //  }))
   }
 
   def subset(rowsToKeep: List[String]) : Pivot = {
